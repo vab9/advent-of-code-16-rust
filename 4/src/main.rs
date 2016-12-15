@@ -12,8 +12,8 @@ fn main() {
     let f = File::open("input.txt").unwrap();
     let reader = BufReader::new(f);
 
-
-    let mut sum = 0;
+    let mut real_rooms = Vec::new();
+    // let mut sum = 0;
     for line in reader.lines() {
         let room = line.unwrap();
         let words: Vec<&str> = re_words.captures_iter(&room)
@@ -22,16 +22,52 @@ fn main() {
         let rest = re_rest.captures(&room).unwrap();
         let id: u32 = rest.name("id").unwrap().parse().unwrap();
         let checksum: &str = rest.name("checksum").unwrap();
-        // println!("id: {}, checksum: {:?}", id, checksum);
         let most_common: String = five_most_common_chars(&words).into_iter().collect();
-        // println!("{:?}", most_common);
+        let offset = (id % 26) as usize;
         if most_common == checksum {
-            sum = sum + id;
+            // sum = sum + id;
+            real_rooms.push((caesar(&words, offset), id));
+
+            if caesar(&words, offset).contains("north") {
+                println!("{:?}, ID: {}", caesar(&words, offset), id);
+            }
         }
+
+        // println!("{:?}", most_common);
+        // if most_common == checksum {
+        //     sum = sum + id;
+        // }
     }
-    println!("THE SUM OF IDs IS {}", sum);
+    // println!("THE SUM OF IDs IS {}", sum);
 }
 
+fn caesar(input: &[&str], offset: usize) -> String {
+    input.iter()
+        .map(|s| rotate(s, offset))
+        .fold(String::new(), |mut new, s| {
+            new.push_str(&s);
+            new.push_str(" ");
+            new
+        })
+}
+
+fn rotate(s: &str, offset: usize) -> String {
+    let lower = "abcdefghijklmnopqrstuvwxyz";
+    s.chars()
+        .map(|c| {
+            match () {
+                _ if lower.contains(c) => {
+                    lower.chars()
+                        .nth((lower.chars()
+                            .position(|x| x == c)
+                            .unwrap() + offset) % 26)
+                        .unwrap()
+                }
+                _ => c,
+            }
+        })
+        .collect()
+}
 fn five_most_common_chars(arr: &[&str]) -> Vec<char> {
     use std::collections::BTreeMap;
     let mytree: BTreeMap<char, u32> = arr.iter()

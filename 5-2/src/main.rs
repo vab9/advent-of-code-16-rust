@@ -25,7 +25,7 @@ fn main() {
             let val = output.chars().nth(6);
             if val.is_some() && v[pos].is_none() {
                 v[pos] = val;
-                let s: String = &v.iter()
+                let s: String = v.iter()
                     .map(|o| o.unwrap_or('_'))
                     .collect();
                 println!("{}", s);

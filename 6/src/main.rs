@@ -19,7 +19,8 @@ fn main() {
     for map in result {
         let mut v: Vec<(char, u32)> = map.into_iter().collect();
         v.sort_by_key(|t| t.1);
-        v.reverse();
+        // reverse for 6-1
+        // v.reverse();
         print!("{}", &v[0].0);
     }
 

@@ -13,7 +13,12 @@ fn main() {
         parse_instructions(&mut screen, &line);
     }
 
-    println!("{}", screen.count_trues());
+    println!("{} Pixels are on!", screen.count_trues());
+
+    // Write to file
+    let mut out = File::create("out.txt").unwrap();
+    out.write_all(format!("{}", screen).as_bytes()).unwrap();
+    println!("Code written to out.txt");
 
 }
 
@@ -57,7 +62,7 @@ impl Screen {
     }
 
     pub fn rotate_row(&mut self, row_index: usize, shift: usize) {
-        let mut row = self.pixels[row_index];
+        let row = self.pixels[row_index];
         let mut new_row = [false; 50];
         for index in 0..row.len() {
             new_row[(index + shift) % row.len()] = row[index];
